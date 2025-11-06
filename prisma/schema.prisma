@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output = "../lib/generated"
 }
 
 datasource db {
@@ -24,6 +24,12 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  razorpayOrderId       String?   @unique
+  razorpaySubscriptionId String?   @unique
+  razorpayPlanId         String? 
+
+  notes Note[] // Adds a list of notes to the User
+  
 }
 
 model Account {
@@ -59,4 +65,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
